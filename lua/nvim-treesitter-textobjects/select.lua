@@ -21,11 +21,14 @@ local function update_selection(range, selection_mode)
     vim.cmd.normal({ selection_mode, bang = true })
   end
 
-  -- end positions with `col=0` mean "up to the end of the previous line, including the newline character"
+  -- End positions with `col=0` mean "up to the end of the previous line,
+  -- including the newline character". Including trailing EOL in the selection
+  -- is not what you want most of the time, so we adjust it to the end of the
+  -- previous line, but dont add 1 even though we are interpreting `end_col` to
+  -- be exclusive afterwards.
   if end_col == 0 then
     end_row = end_row - 1
-    -- +1 is needed because we are interpreting `end_col` to be exclusive afterwards
-    end_col = #api.nvim_buf_get_lines(0, end_row, end_row + 1, true)[1] + 1
+    end_col = #api.nvim_buf_get_lines(0, end_row, end_row + 1, true)[1]
   end
 
   local end_col_offset = 1
